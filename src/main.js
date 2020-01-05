@@ -3,6 +3,8 @@ import App from './App.vue'
 import router from './router'
 
 import ElementUI, { Message, MessageBox } from 'element-ui'
+import ZkTable from 'vue-table-with-tree-grid'
+
 // import axios from 'axios'
 
 import 'element-ui/lib/theme-chalk/index.css'
@@ -16,6 +18,7 @@ Vue.prototype.$confirm = MessageBox.$confirm
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
+Vue.use(ZkTable)
 
 new Vue({
   el: '#app',
