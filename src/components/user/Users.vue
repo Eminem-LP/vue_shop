@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- 面包屑导航 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>用户管理</el-breadcrumb-item>
@@ -38,7 +39,7 @@
               <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteUserById(scope.row.id)"></el-button>
             </el-tooltip>
             <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+              <el-button type="warning" icon="el-icon-setting" size="mini" @click="showSetRoleDialog(scope.row)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -85,6 +86,28 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="editUser">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 分配角色对话框 -->
+    <el-dialog title="分配角色" :visible.sync="setRoleDialogVisible" width="50%" @close="setDialogClosed">
+      <div>
+        <p>当前用户：{{userInfo.username}}</p>
+        <p>当前角色：{{userInfo.role_name}}</p>
+        <p>分配新角色：
+          <el-select v-model="roleId" placeholder="请选择">
+            <el-option
+              v-for="item in roleList"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+              :disabled="item.disabled">
+            </el-option>
+          </el-select>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="setRole">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -156,7 +179,11 @@ export default {
           { required: true, message: '请输入手机号码', trigger: 'blur' },
           { validator: checkMobile, trigger: 'blur' }
         ]
-      }
+      },
+      setRoleDialogVisible: false,
+      userInfo: {},
+      roleList: [],
+      roleId: ''
     }
   },
   methods: {
@@ -270,6 +297,39 @@ export default {
           message: '已取消删除'
         })
       })
+    },
+    showSetRoleDialog (userInfo) {
+      this.setRoleDialogVisible = true
+      this.userInfo = userInfo
+      request({
+        url: '/roles'
+      }).then(res => {
+        if (res.meta.status !== 200) {
+          return this.$message.error('获取角色列表失败！')
+        }
+        this.roleList = res.data
+      })
+    },
+    setRole () {
+      if (!this.roleId) {
+        return this.$message.error('请选择要分配的角色！')
+      }
+      request({
+        url: `users/${this.userInfo.id}/role`,
+        method: 'put',
+        data: { rid: this.roleId }
+      }).then(res => {
+        if (res.meta.status !== 200) {
+          return this.$message.error('分配角色失败！')
+        }
+        this.$message.success('分配角色成功！')
+        this.getUserList()
+      })
+      this.setRoleDialogVisible = false
+    },
+    setDialogClosed () {
+      this.userInfo = {}
+      this.roleId = ''
     }
   },
   created () {
