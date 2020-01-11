@@ -6,6 +6,7 @@
       <el-breadcrumb-item>商品管理</el-breadcrumb-item>
       <el-breadcrumb-item>分类参数</el-breadcrumb-item>
     </el-breadcrumb>
+    <!-- 卡片区域 -->
     <el-card>
       <el-alert show-icon  title="注意：只允许为第三级分类设置参数！！！" type="warning" :closable="false"></el-alert>
       <el-row class="goods_cat">
