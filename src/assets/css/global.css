@@ -16,3 +16,12 @@ body,
 .el-table {
   margin-top: 15px;
 }
+.el-steps {
+  margin: 15px 0;
+}
+.el-step__title {
+  font-size: 13px;
+}
+.quill-editor .ql-container{
+  min-height: 300px;
+}
